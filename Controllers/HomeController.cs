@@ -8,4 +8,5 @@ public class HomeController(UserManager<AppUser> usrMgr) : Controller
   private readonly UserManager<AppUser> userManager = usrMgr;
 
   public ViewResult Index() => View(userManager.Users);
+  public ViewResult Create() => View(new CreateUser());
 }
