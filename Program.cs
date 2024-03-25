@@ -12,13 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(configuration["Data:AppIdentity:ConnectionString"]));
 builder.Services.AddIdentity<AppUser, IdentityRole>(opts =>
-    {
-        opts.Password.RequiredLength = 6;
-        opts.Password.RequireNonAlphanumeric = false;
-        opts.Password.RequireLowercase = false;
-        opts.Password.RequireUppercase = false;
-        opts.Password.RequireDigit = false;
-    }
+  {
+    opts.User.RequireUniqueEmail = true;
+    opts.Password.RequiredLength = 6;
+    opts.Password.RequireNonAlphanumeric = false;
+    opts.Password.RequireLowercase = false;
+    opts.Password.RequireUppercase = false;
+    opts.Password.RequireDigit = false;
+  }
 ).AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
 
 var app = builder.Build();
