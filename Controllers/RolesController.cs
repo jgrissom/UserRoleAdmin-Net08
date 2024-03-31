@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace UserRoleAdmin.Controllers
 {
-  public class RolesController(RoleManager<IdentityRole> roleMgr) : Controller
+  public class RolesController(RoleManager<IdentityRole> roleMgr,  UserManager<AppUser> userMgr) : Controller
   {
     private readonly RoleManager<IdentityRole> roleManager = roleMgr;
+    private readonly UserManager<AppUser> userManager = userMgr;
 
     public IActionResult Index() => View(roleManager.Roles);
     public IActionResult Create() => View();
@@ -50,6 +51,23 @@ namespace UserRoleAdmin.Controllers
         ModelState.AddModelError("", "No role found");
       }
       return View("Index", roleManager.Roles);
+    }
+    public async Task<IActionResult> Edit(string id)
+    {
+      IdentityRole role = await roleManager.FindByIdAsync(id);
+      List<AppUser> members = [];
+      List<AppUser> nonMembers = [];
+      foreach (AppUser user in userManager.Users.ToList())
+      {
+        var list = await userManager.IsInRoleAsync(user, role.Name) ? members : nonMembers;
+        list.Add(user);
+      }
+      return View(new RoleEdit
+      {
+        Role = role,
+        Members = members,
+        NonMembers = nonMembers
+      });
     }
 
     private void AddErrorsFromResult(IdentityResult result)
