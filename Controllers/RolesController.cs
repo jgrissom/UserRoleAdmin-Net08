@@ -10,7 +10,7 @@ namespace UserRoleAdmin.Controllers
     private readonly RoleManager<IdentityRole> roleManager = roleMgr;
     private readonly UserManager<AppUser> userManager = userMgr;
 
-    public IActionResult Index() => View(roleManager.Roles);
+    public IActionResult Index() => View(roleManager.Roles.ToList());
     public IActionResult Create() => View();
 
     [HttpPost]
