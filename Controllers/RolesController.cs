@@ -69,6 +69,39 @@ namespace UserRoleAdmin.Controllers
         NonMembers = nonMembers
       });
     }
+    [HttpPost]
+    public async Task<IActionResult> Edit(RoleModification model)
+    {
+      IdentityResult result;
+      if (ModelState.IsValid)
+      {
+        foreach (string userId in model.IdsToAdd ?? [])
+        {
+          AppUser user = await userManager.FindByIdAsync(userId);
+          if (user != null)
+          {
+            result = await userManager.AddToRoleAsync(user, model.RoleName);
+            if (!result.Succeeded)
+            {
+              AddErrorsFromResult(result);
+            }
+          }
+        }
+        foreach (string userId in model.IdsToDelete ?? [])
+        {
+          AppUser user = await userManager.FindByIdAsync(userId);
+          if (user != null)
+          {
+            result = await userManager.RemoveFromRoleAsync(user, model.RoleName);
+            if (!result.Succeeded)
+            {
+              AddErrorsFromResult(result);
+            }
+          }
+        }
+      }
+      return await Edit(model.RoleId);
+    }
 
     private void AddErrorsFromResult(IdentityResult result)
     {
